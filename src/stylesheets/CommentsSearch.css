@@ -1,0 +1,23 @@
+form {
+  border: 1px solid #ccc;
+  padding: 1rem;
+  margin: 1rem;
+}
+
+form > input {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  font-weight: bold;
+}
+
+form > input[type="number"] {
+  width: 3rem;
+  margin-right: 0.5rem;
+}
+
+.section {
+  border: 1px solid #ccc;
+  padding: 1rem;
+  margin: 1rem;
+}

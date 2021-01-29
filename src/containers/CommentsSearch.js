@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Loader from "../components/Loader";
+import { baseUrl } from "../utils/axios.js";
+import "../stylesheets/CommentsSearch.css";
 
 const CommentsSearch = () => {
   const [comments, setComments] = useState([]);
   const [postId, setPostId] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState(null);
   const handleSubmit = (event) => {
     event.preventDefault();
     setPostId(event.target.postId.value);
@@ -14,14 +16,14 @@ const CommentsSearch = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    axios(`https://jsonplaceholder.typicode.com/posts/${postId}/comments`)
+    axios(`${baseUrl}/posts/${postId}/comments`)
       .then((res) => {
         setComments(res.data);
         setIsLoading(false);
+        setErrorMessage(null);
       })
-      .catch((error) => {
-        setErrorMessage(error.message);
-        console.error(errorMessage);
+      .catch(() => {
+        setErrorMessage("Ooops! Something went wrong...");
         setIsLoading(false);
       });
   }, [postId, errorMessage]);
@@ -29,16 +31,29 @@ const CommentsSearch = () => {
   return (
     <div className="App">
       <form onSubmit={handleSubmit}>
-        <input type="text" name="postId" />
-        <input type="submit" value="submit" />
+        <h3>Find comments from post #:</h3>
+        <input type="number" name="postId" placeholder="15" min="1" />
+        <input type="submit" value="Search" />
       </form>
       {isLoading && <Loader />}
       {!isLoading &&
-        comments.length > 0 &&
-        comments.map((comment) => <div key={comment.id}>{comment.body}</div>)}
-      {!isLoading &&
-        comments.length === 0 &&
-        `No comments available for postId ${postId}`}
+        !errorMessage &&
+        (comments.length > 0 ? (
+          comments.map((comment) => (
+            <div className="section" key={comment.id}>
+              {comment.body}
+            </div>
+          ))
+        ) : (
+          <div className="section">
+            No comments available for postId {postId}
+          </div>
+        ))}
+      {!isLoading && errorMessage && (
+        <div className="section">
+          <strong>{errorMessage}</strong>
+        </div>
+      )}
     </div>
   );
 };
